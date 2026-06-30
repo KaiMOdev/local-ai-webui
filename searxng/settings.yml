@@ -1,0 +1,33 @@
+# SearXNG config voor lokaal gebruik met Open WebUI.
+# Belangrijk: 'json' moet bij search.formats staan, anders kan Open WebUI
+# de resultaten niet ophalen. Erft verder de SearXNG-defaults.
+
+use_default_settings: true
+
+server:
+  # VERVANG door een eigen willekeurige string (zie scripts/pull-models.ps1 comment
+  # of genereer met PowerShell). Niet leeg laten.
+  secret_key: "change-me-searxng-secret-please"
+  # Rate-limiter uit: dit is een single-user lokale instantie.
+  limiter: false
+  image_proxy: false
+
+search:
+  # JSON is vereist voor de Open WebUI integratie.
+  formats:
+    - html
+    - json
+  # Veiligzoeken/standaardtaal naar smaak:
+  safe_search: 0
+  autocomplete: ""
+
+# Selectie van betrouwbare, snelle engines. Pas naar wens aan.
+engines:
+  - name: duckduckgo
+    disabled: false
+  - name: bing
+    disabled: false
+  - name: brave
+    disabled: false
+  - name: wikipedia
+    disabled: false

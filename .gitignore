@@ -1,0 +1,17 @@
+# Secrets / lokale config
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# SearXNG genereert soms een runtime secret; houd alleen onze eigen config in git
+searxng/uwsgi.ini

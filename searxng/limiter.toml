@@ -1,0 +1,17 @@
+# Rate-limiter volledig uit voor lokale single-user instantie.
+# (server.limiter: false in settings.yml schakelt dit ook uit; dit bestand
+#  is een expliciete back-up voor als de limiter toch geladen wordt.)
+
+[botdetection.ip_limit]
+# Sta verzoeken zonder/met afwijkende headers toe (lokale calls van Open WebUI).
+link_token = false
+
+[botdetection.ip_lists]
+# Beschouw het Docker-interne netwerk als vertrouwd.
+pass_ip = [
+  "127.0.0.0/8",
+  "::1",
+  "172.16.0.0/12",
+  "192.168.0.0/16",
+  "10.0.0.0/8",
+]

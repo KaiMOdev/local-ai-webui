@@ -1,0 +1,59 @@
+# Lokale AI WebUI stack: Open WebUI + SearXNG
+# Ollama draait native op Windows (betrouwbaarste GPU). Open WebUI verbindt
+# ernaar via host.docker.internal. Zie README.md voor de "alles-in-Docker"
+# variant (Ollama als extra service).
+
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "${WEBUI_PORT:-3000}:8080"
+    extra_hosts:
+      # Maakt host.docker.internal bereikbaar (Ollama op de Windows-host).
+      - "host.docker.internal:host-gateway"
+    environment:
+      # --- Inference (Ollama native op de host) ---
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+
+      # --- Web search via SearXNG ---
+      - ENABLE_RAG_WEB_SEARCH=true
+      - RAG_WEB_SEARCH_ENGINE=searxng
+      - SEARXNG_QUERY_URL=http://searxng:8080/search?q=<query>&format=json
+      # Nieuwere alias (sommige versies); schaadt niet als beide gezet zijn:
+      - ENABLE_WEB_SEARCH=true
+      - WEB_SEARCH_ENGINE=searxng
+
+      # --- RAG / embeddings (via Ollama) ---
+      - RAG_EMBEDDING_ENGINE=ollama
+      - RAG_EMBEDDING_MODEL=nomic-embed-text
+      - RAG_OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      # Hybrid search (BM25 + vector) + reranking voor betere relevantie:
+      - ENABLE_RAG_HYBRID_SEARCH=true
+      - RAG_RERANKING_MODEL=BAAI/bge-reranker-v2-m3
+
+      # --- Beveiliging / sessie ---
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-change-me-in-dot-env}
+    volumes:
+      - open-webui:/app/backend/data
+    depends_on:
+      - searxng
+    restart: unless-stopped
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    # Geen poort naar de host nodig; alleen Open WebUI praat ermee (intern netwerk).
+    # Ontkommentarieer om SearXNG ook in je browser te openen voor debuggen:
+    # ports:
+    #   - "8888:8080"
+    volumes:
+      - ./searxng:/etc/searxng:rw
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:8080/
+      - UWSGI_WORKERS=2
+      - UWSGI_THREADS=4
+    restart: unless-stopped
+
+volumes:
+  open-webui:
