@@ -13,7 +13,7 @@ jobs:
   lint-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - name: Set up Python 3.11
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
@@ -29,16 +29,55 @@ jobs:
       - name: Lint (ruff)
         run: ruff check .
 
+      - name: Security scan (bandit)
+        run: bandit -r extensions/ -ll -q
+
       - name: Syntax check (py_compile)
         run: python -m py_compile extensions/tools/*.py extensions/functions/*.py
 
-      - name: Unit tests (pytest)
-        run: pytest
+      - name: Unit tests (pytest + coverage)
+        run: pytest --cov=extensions --cov-report=term-missing
 
   compose-validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - name: Validate docker-compose.yml
         run: docker compose config --quiet
+
+  repo-hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          fetch-depth: 0  # nodig voor de commit-message range-check
+
+      - name: No tracked files matching .gitignore
+        run: |
+          tracked=$(git ls-files --ignored --cached --exclude-standard)
+          if [ -n "$tracked" ]; then
+            echo "::error::Deze getrackte bestanden matchen .gitignore-patronen:"
+            echo "$tracked"
+            exit 1
+          fi
+          echo "OK: geen getrackte bestanden in .gitignore"
+
+      - name: No disallowed files
+        run: |
+          bad=$(git ls-files | grep -E '(\.DS_Store|Thumbs\.db|\.bak$|\.swp$)' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Verboden bestanden gevonden:"
+            echo "$bad"
+            exit 1
+          fi
+          echo "OK: geen verboden bestanden"
+
+      - name: Conventional Commits check (warning only)
+        if: github.event_name == 'pull_request'
+        run: |
+          git log --format="%s" "origin/${{ github.base_ref }}..HEAD" | while read -r msg; do
+            if [ -n "$msg" ] && ! echo "$msg" | grep -qE '^(feat|fix|docs|chore|refactor|test|style|ci|perf|build)(\(.+\))?(!)?:'; then
+              echo "::warning::Commit volgt geen Conventional Commits: $msg"
+            fi
+          done
