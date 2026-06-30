@@ -2,5 +2,5 @@
 # Open WebUI bundelt deze al; deze lijst documenteert wat de tools nodig hebben
 # (en wordt door Open WebUI's `requirements:`-frontmatter automatisch geïnstalleerd).
 requests>=2.34.2
-beautifulsoup4>=4.12.0
+beautifulsoup4>=4.15.0
 pydantic>=2.13.4
