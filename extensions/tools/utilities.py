@@ -15,10 +15,9 @@ requirements:
 import ast
 import operator
 from datetime import datetime
-from zoneinfo import ZoneInfo, available_timezones
+from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, Field
-
 
 # --- Veilige expressie-evaluator (geen eval()) -----------------------------------
 _ALLOWED_BINOPS = {

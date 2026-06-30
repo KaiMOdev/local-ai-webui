@@ -12,11 +12,36 @@ requirements: requests, beautifulsoup4
 # URL op te halen en te lezen. Dit is iets anders dan web search: hier weet je de
 # URL al (bv. de gebruiker plakt een link, of een ander resultaat verwijst ernaar).
 
+import ipaddress
 import re
+import socket
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
 from pydantic import BaseModel, Field
+
+
+def _is_public_url(url: str) -> bool:
+    """
+    SSRF-bescherming: sta alleen http(s) naar publieke IP-adressen toe.
+    Blokkeert loopback, private en link-local adressen (bv. cloud-metadata
+    op 169.254.169.254) zodat een (prompt-geinjecteerd) model geen interne
+    diensten kan benaderen. Let op: volgt het verzoek redirects, dus dit dekt
+    de eerste host; voor strikte garantie kun je redirects uitschakelen.
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https") or not parsed.hostname:
+        return False
+    try:
+        infos = socket.getaddrinfo(parsed.hostname, parsed.port or 80, proto=socket.IPPROTO_TCP)
+    except OSError:
+        return False
+    for info in infos:
+        ip = ipaddress.ip_address(info[4][0])
+        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast:
+            return False
+    return True
 
 
 class Tools:
@@ -45,8 +70,14 @@ class Tools:
         :param url: De volledige URL inclusief http:// of https://.
         :return: De leesbare tekst van de pagina (afgekapt), of een foutmelding.
         """
-        if not re.match(r"^https?://", url.strip(), re.IGNORECASE):
+        url = url.strip()
+        if not re.match(r"^https?://", url, re.IGNORECASE):
             return "Fout: geef een volledige URL op die begint met http:// of https://."
+        if not _is_public_url(url):
+            return (
+                "Fout: deze URL wijst naar een niet-publiek of intern adres en wordt "
+                "om veiligheidsredenen geweigerd."
+            )
 
         async def _status(description: str, done: bool = False):
             if __event_emitter__:
