@@ -1,0 +1,40 @@
+# Geconsolideerde tool-config (vervangt ruff.toml + pytest.ini).
+# Open WebUI draait op Python 3.11; lint-config overgenomen/versimpeld uit LocalChat (MIT).
+
+[tool.ruff]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = [
+    "E501",   # line-too-long — beoordeling door reviewer, niet door tooling
+    "B008",   # function-call-in-default — Field(default=os.getenv(...)) is bewust
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]  # assert toegestaan in tests
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+# --cov wordt in CI meegegeven (pytest-cov); lokaal blijft `pytest` werken zonder.
+addopts = ["-v", "--tb=short"]
+
+[tool.coverage.run]
+source = ["extensions"]
+relative_files = true
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]

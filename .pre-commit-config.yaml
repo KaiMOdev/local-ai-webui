@@ -1,0 +1,19 @@
+# Pre-commit hooks: lint + basis-hygiëne, lokaal vóór elke commit.
+# Eenmalig installeren:  pip install pre-commit && pre-commit install
+# Handmatig over alles draaien:  pre-commit run --all-files
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.20
+    hooks:
+      - id: ruff                 # zelfde lint als CI (config in pyproject.toml)
+        args: [--fix]
+      # ruff-format laten we (nog) uit: de codebase is niet ruff-formatted,
+      # aanzetten zou grote diffs geven. Ontkommentarieer bewust als je dat wilt.
+      # - id: ruff-format
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
