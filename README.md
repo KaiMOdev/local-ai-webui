@@ -34,8 +34,9 @@ Browser ─▶ Open WebUI (Docker) ─▶ Ollama (native, GPU)   ← chat + embe
 Copy-Item .env.example .env
 # open .env en zet een eigen WEBUI_SECRET_KEY (en evt. searxng secret in searxng/settings.yml)
 
-# 2. Modellen pullen (kies tier op je VRAM: 16gb | 8gb | cpu)
-.\scripts\pull-models.ps1 -Tier 8gb
+# 2. Modellen pullen (detecteert je NVIDIA-GPU automatisch; override met -Tier of -Model)
+.\scripts\pull-models.ps1
+# of forceer een tier: .\scripts\pull-models.ps1 -Tier 16gb | 8gb | cpu
 
 # 3. Stack starten
 docker compose up -d
@@ -54,8 +55,9 @@ Open daarna **http://localhost:3000** en maak het eerste account aan (dat wordt 
 | GPU 8–12 GB | `qwen2.5:7b-instruct` (of `llama3.1:8b`) | `nomic-embed-text` |
 | CPU / zwakke GPU | `qwen2.5:3b-instruct` (of `llama3.2:3b`) | `nomic-embed-text` |
 
-> `qwen2.5` is gekozen om sterke, betrouwbare **function calling**. Weet je je VRAM niet?
-> Start met `-Tier 8gb`; werkt het traag, ga naar `cpu`; heb je een dikke GPU, naar `16gb`.
+> `qwen2.5` is gekozen om sterke, betrouwbare **function calling**. Het script kiest
+> standaard automatisch een tier op basis van je NVIDIA-VRAM (geen GPU -> `cpu`).
+> Overschrijf desgewenst met `-Tier 16gb|8gb|cpu` of `-Model "..."`.  
 
 ---
 
