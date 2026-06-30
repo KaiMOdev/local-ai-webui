@@ -39,11 +39,23 @@ in Open WebUI importeert.
 ## Checks vóór commit
 ```bash
 ruff check .
+bandit -r extensions/ -ll -q
 python -m py_compile extensions/tools/*.py extensions/functions/*.py
 pytest
 docker compose config --quiet
 ```
-CI (`.github/workflows/ci.yml`) draait deze ook; CodeQL scant wekelijks op security.
+CI (`.github/workflows/ci.yml`) draait deze ook, plus een `repo-hygiene`-job; CodeQL
+scant wekelijks op security. Tip: `pip install pre-commit && pre-commit install`
+draait ruff + whitespace-hygiëne automatisch bij elke commit (zie `.pre-commit-config.yaml`).
+
+## Session hygiene
+Vóór je een sessie als "klaar" beschouwt: draai `git session-status`. Het toont
+branches met commits die nog niet in `main` zitten, sync-drift tussen lokaal en
+`origin/main`, en open PR's — zo land je geen commits op een al-gemergede branch.
+Eenmalig instellen (de alias staat lokaal in `.git/config`, niet in de repo):
+```bash
+git config alias.session-status '!bash scripts/session-status.sh'
+```
 
 ## Herkomst
 Tooling (ruff/CI/CodeQL/dependabot-patroon) en de security-aanpak zijn overgenomen uit
