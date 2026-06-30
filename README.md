@@ -57,7 +57,7 @@ Open daarna **http://localhost:3000** en maak het eerste account aan (dat wordt 
 
 > `qwen2.5` is gekozen om sterke, betrouwbare **function calling**. Het script kiest
 > standaard automatisch een tier op basis van je NVIDIA-VRAM (geen GPU -> `cpu`).
-> Overschrijf desgewenst met `-Tier 16gb|8gb|cpu` of `-Model "..."`.  
+> Overschrijf desgewenst met `-Tier 16gb|8gb|cpu` of `-Model "..."`.
 
 ---
 
