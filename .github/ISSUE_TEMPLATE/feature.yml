@@ -1,0 +1,10 @@
+name: Feature
+description: A new tool, skill, or stack change
+labels: [enhancement]
+body:
+  - type: textarea
+    id: ask
+    attributes:
+      label: What do you want
+    validations:
+      required: true

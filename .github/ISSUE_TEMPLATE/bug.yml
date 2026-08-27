@@ -1,0 +1,17 @@
+name: Bug
+description: Something does not work in the local stack
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Setup
+      description: OS, GPU/VRAM, Ollama native or Docker, model name.
+    validations:
+      required: true

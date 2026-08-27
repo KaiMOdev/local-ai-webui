@@ -1,9 +1,23 @@
 # Lokale AI WebUI — Open WebUI + Ollama
 
+<p align="center">
+  <img src="docs/icon.svg" alt="Lokale AI WebUI" width="96" />
+</p>
+
+<div align="center">
+
 Een zelf-gehoste, privacy-vriendelijke AI-assistent die volledig lokaal draait.
 Gebouwd op **[Open WebUI](https://openwebui.com)** met **[Ollama](https://ollama.com)**
 als inference-engine, plus **RAG (documenten)**, **tool calling**, **skills/agents**
 en **web search** via SearXNG.
+
+[![CI](https://github.com/KaiMOdev/local-ai-webui/actions/workflows/ci.yml/badge.svg)](https://github.com/KaiMOdev/local-ai-webui/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/KaiMOdev/local-ai-webui/actions/workflows/codeql.yml/badge.svg)](https://github.com/KaiMOdev/local-ai-webui/actions/workflows/codeql.yml)
+[![License](https://img.shields.io/github/license/KaiMOdev/local-ai-webui)](https://github.com/KaiMOdev/local-ai-webui)
+[![Issues](https://img.shields.io/github/issues/KaiMOdev/local-ai-webui)](https://github.com/KaiMOdev/local-ai-webui/issues)
+[![Last commit](https://img.shields.io/github/last-commit/KaiMOdev/local-ai-webui)](https://github.com/KaiMOdev/local-ai-webui/commits/main)
+
+</div>
 
 ```
 Browser ─▶ Open WebUI (Docker) ─▶ Ollama (native, GPU)   ← chat + embeddings
